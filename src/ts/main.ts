@@ -35,7 +35,7 @@ function loadHandler(e: Event){
    }
 
    initCheckbox();
-   initCanvas();
+   //initCanvas();
 
    const form: HTMLFormElement = document.querySelector('.form')!;
 
@@ -61,6 +61,7 @@ function loadHandler(e: Event){
       const executer = new Executer(tayInputValue, xMaxInputValue, xZeroInputValue, yZeroInputValue);
       executer.Start();
 
+      initCanvas();
       const painter = new Painter(executer.PointList, canvas);
       painter.Start();
    });

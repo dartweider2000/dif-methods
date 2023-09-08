@@ -5,11 +5,14 @@ export default class Painter{
    private cx: CanvasRenderingContext2D;
    private scaleMetrix: Point;
    private canvas: HTMLCanvasElement;
+   private maxMinPoints: [number, number, number, number];
 
    constructor(pointList: Point[], canvas: HTMLCanvasElement){
       this.canvas = canvas;
       this.cx = this.canvas.getContext('2d')!;
-      this.scaleMetrix = this.printCoordLines(...this.fitlerPointList(pointList));
+
+      this.maxMinPoints = this.fitlerPointList(pointList);
+      this.scaleMetrix = this.printCoordLines(...this.maxMinPoints);
       this.locations = this.convertLocations(pointList);
 
       console.log(this.locations);
@@ -20,6 +23,16 @@ export default class Painter{
 
       this.cx.fillStyle = 'orange';
       this.cx.fillRect(0, 0, canvas.width, canvas.height);
+   }
+
+   private renderAxis(): void{
+      // const obj = {
+      //    'Zero': {'text': '-2', point: },
+      //    'Y': {
+      //       '-2': {'text': '-2', point: }
+      //    }
+      // };
+
    }
 
    private fitlerPointList(pointList: Point[]): [number, number, number, number]{
