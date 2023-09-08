@@ -20,25 +20,40 @@ export default class Executer{
       this.y = y_0;
 
       this.pointList = [];
+      this.addToList();
    }
 
    private getDerivate(): number{
       return (this.y + 3.5 * (this.x - 1) - 3.5) / this.x;
    }
 
-   private setNewY(){
+   private setNewY(): void{
       this.y = this.getDerivate() * this.tay + this.y;
    }
 
-   private setNewX(){
+   private setNewX(): void{
       this.x += this.tay;
    }
 
-   private addToList(){
+   private addToList(): void{
       this.pointList.push(new Point(this.x, this.y));
    }
 
-   public Start(){
+   private loop(): void{
+      while(this.x_max > this.x){
+         this.setNewY();
+         this.setNewX();
+         this.addToList();
+      }
 
+      console.log(this.pointList);
+   }
+
+   public Start(): void{
+      this.loop();
+   }
+
+   public get PointList(): Point[]{
+      return this.pointList;
    }
 }

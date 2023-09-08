@@ -138,6 +138,16 @@ body{
    }
 }
 
+.content {
+   // .content__wrapper
+   &__wrapper {
+      width: 100%;
+      //background: orange;
+   }
+   // .content__canvas
+   &__canvas {
+   }
+}
 
 .canvas {
 }

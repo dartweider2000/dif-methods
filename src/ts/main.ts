@@ -1,3 +1,5 @@
+import Executer from "./modules/Executer";
+import Painter from "./modules/Painter";
 
 document.addEventListener('DOMContentLoaded', loadHandler);
 
@@ -14,7 +16,24 @@ function loadHandler(e: Event){
       });
    }
 
+   const canvasWrapper = document.querySelector('.content__wrapper') as HTMLElement;
+   const canvas = canvasWrapper.firstElementChild as HTMLCanvasElement;
+
+   const initCanvas = () => {
+      const resireHandler = () => {
+         const width = canvasWrapper.offsetWidth;
+         canvasWrapper.style.height = `${width}px`;
+
+         canvas.width = width;
+         canvas.height = width;
+      };
+
+      resireHandler();
+      window.addEventListener('resize', resireHandler);
+   }
+
    initCheckbox();
+   initCanvas();
 
    const form: HTMLFormElement = document.querySelector('.form')!;
 
@@ -36,5 +55,10 @@ function loadHandler(e: Event){
       const printValue: boolean = printCheckbox.checked;
 
       console.log(xMaxInputValue, tayInputValue, xZeroInputValue, yZeroInputValue, printValue);
+
+      const executer = new Executer(tayInputValue, xMaxInputValue, xZeroInputValue, yZeroInputValue);
+      executer.Start();
+
+      const painter = new Painter(executer.PointList, canvas);
    });
 }
