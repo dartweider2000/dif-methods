@@ -21,15 +21,17 @@ function loadHandler(e: Event){
 
    const initCanvas = () => {
       const resireHandler = () => {
-         const width = canvasWrapper.offsetWidth;
-         canvasWrapper.style.height = `${width}px`;
+         const width = canvasWrapper.parentElement!.offsetWidth;
+         //canvasWrapper.style.height = `${width}px`;
 
          canvas.width = width;
          canvas.height = width;
+
+         console.log(canvasWrapper.offsetWidth);
       };
 
       resireHandler();
-      window.addEventListener('resize', resireHandler);
+      window.addEventListener('resize', () => setTimeout(resireHandler, 100));
    }
 
    initCheckbox();
@@ -60,5 +62,8 @@ function loadHandler(e: Event){
       executer.Start();
 
       const painter = new Painter(executer.PointList, canvas);
+      painter.Start();
    });
+
+   //const painter = new Painter([], canvas);
 }
