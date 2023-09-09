@@ -1,3 +1,4 @@
+import AxisData from "./AxisData";
 import Point from "./Point";
 
 export default class Painter{
@@ -5,14 +6,14 @@ export default class Painter{
    private cx: CanvasRenderingContext2D;
    private scaleMetrix: Point;
    private canvas: HTMLCanvasElement;
-   private maxMinPoints: [number, number, number, number];
+   private maxMinValues: [number, number, number, number];
 
    constructor(pointList: Point[], canvas: HTMLCanvasElement){
       this.canvas = canvas;
       this.cx = this.canvas.getContext('2d')!;
 
-      this.maxMinPoints = this.fitlerPointList(pointList);
-      this.scaleMetrix = this.printCoordLines(...this.maxMinPoints);
+      this.maxMinValues = this.fitlerPointList(pointList);
+      this.scaleMetrix = this.printCoordLines(...this.maxMinValues);
       this.locations = this.convertLocations(pointList);
 
       console.log(this.locations);
@@ -26,13 +27,19 @@ export default class Painter{
    }
 
    private renderAxis(): void{
-      // const obj = {
-      //    'Zero': {'text': '-2', point: },
-      //    'Y': {
-      //       '-2': {'text': '-2', point: }
-      //    }
-      // };
+      const obj : {
+         'Zero': AxisData | null,
+         'Y': AxisData[],
+         'X': AxisData[]
+      } = { 'Zero': null, 'X': [], 'Y': [] };
 
+      const deltaXZero = 0 - this.maxMinValues[3];
+      const deltaYZero = 0 - this.maxMinValues[1];
+      
+      obj.Zero = new AxisData('0', new Point(this.convertXLocation(deltaXZero), this.convertYLocation(deltaYZero)));
+      console.log(obj.Zero);
+
+      this.renderArc(obj.Zero.Point, 10, 'green');
    }
 
    private fitlerPointList(pointList: Point[]): [number, number, number, number]{
@@ -70,20 +77,29 @@ export default class Painter{
       return new Point(scaleCoordX, scaleCoordY);
    }
 
-   //private 
-   private convertLocations(pointList: Point[]): Point[]{
-      return pointList.map(point => new Point(Math.abs(point.X) * this.scaleMetrix.X, this.canvas.height - Math.abs(point.Y) * this.scaleMetrix.Y));
+   private convertXLocation(x: number): number{
+      return Math.abs(x) * this.scaleMetrix.X;
    }
 
-   private renderArc(point: Point){
+   private convertYLocation(y: number): number{
+      return this.canvas.height - Math.abs(y) * this.scaleMetrix.Y;
+   }
+
+   //private 
+   private convertLocations(pointList: Point[]): Point[]{
+      return pointList.map(point => new Point(this.convertXLocation(point.X), this.convertYLocation(point.Y)));
+   }
+
+   private renderArc(point: Point, radius: number = 3, color: string = 'red'){
       this.cx.beginPath();
-      this.cx.fillStyle = 'red';
-      this.cx.arc(point.X, point.Y, 3, 0, 2 * Math.PI, true);
+      this.cx.fillStyle = color;
+      this.cx.arc(point.X, point.Y, radius, 0, 2 * Math.PI, true);
       this.cx.fill();
    }
 
    private loop(){
       this.locations.forEach(point => this.renderArc(point));
+      this.renderAxis();
 
 
       //requestAnimationFrame(this.loop);
