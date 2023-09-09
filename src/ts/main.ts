@@ -111,7 +111,7 @@ function loadHandler(e: Event){
       const yZeroInputValue: number = +yZeroInput.value;
       const selectValue: number = +seclectEl.value;
 
-      //console.log(xMaxInputValue, tayInputValue, xZeroInputValue, yZeroInputValue);
+      console.log(xMaxInputValue, tayInputValue, xZeroInputValue, yZeroInputValue);
 
       const executer = new Executer(tayInputValue, xMaxInputValue, xZeroInputValue, yZeroInputValue, selectValue);
       executer.Start();

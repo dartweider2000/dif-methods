@@ -1,6 +1,7 @@
 import AxisBigData from "./AxisBigData";
 import AxisData from "./AxisData";
 import FullLocations from "./FullLocations";
+import MinMaxValues from "./MinMaxValues";
 import Point from "./Point";
 import Size from "./Size";
 
@@ -15,7 +16,7 @@ export default class Painter{
    private pointList: Point[];
    private pointRadius: number;
    private axisBigData: AxisBigData;
-
+   private minMaxValues: MinMaxValues;
    private hoverLocation: FullLocations | null;
 
    constructor(pointList: Point[], canvas: HTMLCanvasElement){
@@ -29,13 +30,16 @@ export default class Painter{
       this.pointRadius = 3;
 
       this.pointList = pointList;
-      this.maxMinValues = this.fitlerPointList(this.pointList);
-      this.scaleMetrix = this.printCoordLines(...this.maxMinValues);
+      // this.maxMinValues = this.fitlerPointList(this.pointList);
+      this.minMaxValues = new MinMaxValues(...this.fitlerPointList(this.pointList));
+      this.scaleMetrix = this.printCoordLines();
       this.locations = this.convertLocations(this.pointList);
 
       this.executeAxis();
 
       //console.log(this.locations);
+
+      console.log(this.minMaxValues);
 
       //this.printCoordLines();
 
@@ -79,38 +83,43 @@ export default class Painter{
    }
 
    private executeAxis(): void{
-      const deltaXZero = 0 - this.maxMinValues[3];
-      const deltaYZero = 0 - this.maxMinValues[1];
+      const deltaXZero = this.minMaxValues.XMin > 0 ? 0 : 0 - this.minMaxValues.XMin;
+      const deltaYZero = this.minMaxValues.YMin > 0 ? 0 : 0 - this.minMaxValues.YMin;
+
+      //console.log(this.maxMinValues);
+      console.log(deltaXZero, deltaYZero);
       
       this.axisBigData.Zero = new AxisData('0', new Point(this.convertXLocation(deltaXZero), this.convertYLocation(deltaYZero)));
 
-      if(this.maxMinValues[3] < 0){
-         const start = this.locations.find(loc => loc.MathPoint.X == this.maxMinValues[3])!;
+      if(this.minMaxValues.XMin < 0){
+         const start = this.locations.find(loc => loc.MathPoint.X == this.minMaxValues.XMin)!;
          this.axisBigData.X.start = new AxisData(`${~~start.MathPoint.X}`, new Point(start.ProgramPoint.X, this.axisBigData.Zero.Point.Y));
       }else{
          this.axisBigData.X.start = this.axisBigData.Zero;
       } 
 
-      if(this.maxMinValues[2] > 0){
-         const end = this.locations.find(loc => loc.MathPoint.X == this.maxMinValues[2])!;
+      if(this.minMaxValues.XMax > 0){
+         const end = this.locations.find(loc => loc.MathPoint.X == this.minMaxValues.XMax)!;
          this.axisBigData.X.end = new AxisData(`${~~end.MathPoint.X}`, new Point(end.ProgramPoint.X, this.axisBigData.Zero.Point.Y));
       }else{
          this.axisBigData.X.end = this.axisBigData.Zero;
       } 
 
-      if(this.maxMinValues[1] < 0){
-         const start = this.locations.find(loc => loc.MathPoint.Y == this.maxMinValues[1])!;
+      if(this.minMaxValues.YMin < 0){
+         const start = this.locations.find(loc => loc.MathPoint.Y == this.minMaxValues.YMin)!;
          this.axisBigData.Y.start = new AxisData(`${~~start.MathPoint.Y}`, new Point(this.axisBigData.Zero.Point.X, start.ProgramPoint.Y));
       }else{
          this.axisBigData.Y.start = this.axisBigData.Zero;
       } 
 
-      if(this.maxMinValues[0] > 0){
-         const end = this.locations.find(loc => loc.MathPoint.Y == this.maxMinValues[0])!;
+      if(this.minMaxValues.YMax > 0){
+         const end = this.locations.find(loc => loc.MathPoint.Y == this.minMaxValues.YMax)!;
          this.axisBigData.Y.end = new AxisData(`${~~end.MathPoint.Y}`, new Point(this.axisBigData.Zero.Point.X, end.ProgramPoint.Y));
       }else{
          this.axisBigData.Y.end = this.axisBigData.Zero;
       } 
+
+      console.log(this.axisBigData);
    }
 
    private renderAxis(): void{
@@ -162,15 +171,15 @@ export default class Painter{
             result[3] = value.X;
 
          return result;
-      }, [pointList[0].Y, 0, pointList[0].X, 0]);
+      }, [-Infinity, Infinity, -Infinity, Infinity]);
    }
 
-   private printCoordLines(highY: number, lowY: number, highX: number, lowX: number): Point{
+   private printCoordLines(): Point{
       const canvasWidth = this.canvasSize.Width;
       const canvasHeight = this.canvasSize.Height;
 
-      const scaleCoordX = canvasWidth / (Math.abs(highX) + Math.abs(lowX));
-      const scaleCoordY = canvasHeight / (Math.abs(highY) + Math.abs(lowY));
+      const scaleCoordX = canvasWidth / (Math.abs(this.minMaxValues.XMax) + (this.minMaxValues.XMin > 0 ? 0 : Math.abs(this.minMaxValues.XMin)));
+      const scaleCoordY = canvasHeight / (Math.abs(this.minMaxValues.YMax) + (this.minMaxValues.YMin > 0 ? 0 : Math.abs(this.minMaxValues.YMin)));
 
       // console.log(highX, lowX, highY, lowY);
       // console.log(canvasWidth, canvasHeight);
