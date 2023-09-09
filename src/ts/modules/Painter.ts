@@ -17,17 +17,21 @@ export default class Painter{
    private axisBigData: AxisBigData;
    private minMaxValues: MinMaxValues;
    private hoverLocation: FullLocations | null;
+   private fontSize: number;
 
-   constructor(pointList: Point[], canvas: HTMLCanvasElement, xMax: number){
+   constructor(pointList: Point[], canvas: HTMLCanvasElement, xMax: number, innderWidth: number){
       this.canvas = canvas;
       this.cx = this.canvas.getContext('2d')!;
 
       this.axisBigData = new AxisBigData();
       this.hoverLocation = null;
 
-      this.canvasPadding = 30;
+      this.canvasPadding = this.executeCanvasPaddng(innderWidth);
+      this.fontSize = this.executeFontSize(innderWidth);
+      this.pointRadius = this.executeRadius(xMax, innderWidth);
+
       this.canvasSize = new Size(this.canvas.width - this.canvasPadding * 2, this.canvas.height - this.canvasPadding * 2);
-      this.pointRadius = this.executeRadius(xMax);
+      //this.pointRadius = this.executeRadius(xMax, innderWidth);
 
       this.pointList = pointList;
       this.minMaxValues = new MinMaxValues(...this.fitlerPointList(this.pointList));
@@ -83,15 +87,33 @@ export default class Painter{
       };
    }
 
-   private executeRadius(xMax: number): number{
-      // if(xMax <= 10){
-      //    return 10;
-      // }else 
-      if(xMax <= 150){
+   private executeCanvasPaddng(innderWidth: number): number{
+      
+      if(innderWidth > 900){
+         return 30;
+      }else if(innderWidth > 500){
+         return 20;
+      }else{
+         return 15;
+      }
+   }
+
+   private executeFontSize(innderWidth: number): number{
+      if(innderWidth > 900){
+         return 30;
+      }else if(innderWidth > 500){
+         return 20;
+      }else{
+         return 15;
+      }
+   }
+
+   private executeRadius(xMax: number, innderWidth: number): number{
+      if(xMax <= 150 && innderWidth > 1000){
          return 5;
-      }else if(xMax <= 300){
-         return 3;
-      }else if(xMax <= 800){
+      }else if(xMax <= 300 && innderWidth > 700){
+         return 2;
+      }else if(xMax <= 800 && innderWidth > 400){
          return 1;
       }else{
          return 0.5;
@@ -158,7 +180,7 @@ export default class Painter{
          this.renderText(this.axisBigData.Y.start.Value, this.axisBigData.Y.start.Point, true);
    }
 
-   private renderText(text: string | number, point: Point, isUp: boolean = false, isNear: boolean = false, fontSize: number = 30, color: string = 'black'){
+   private renderText(text: string | number, point: Point, isUp: boolean = false, isNear: boolean = false, fontSize: number = this.fontSize, color: string = 'black'){
       this.cx.fillStyle = color;
       this.cx.font = `${fontSize}px serif`;
       this.cx.fillText(
@@ -271,15 +293,14 @@ export default class Painter{
          this.rederLine(this.hoverLocation.ProgramPoint, xZero, 'green');
          this.rederLine(this.hoverLocation.ProgramPoint, yZero, 'green');
 
-         this.renderText(`${this.hoverLocation.MathPoint.Y}`, xZero, true, false, 25, 'orange');
-         this.renderText(`${this.hoverLocation.MathPoint.X}`, yZero, true, false, 25, 'orange');
+         this.renderText(`${this.hoverLocation.MathPoint.Y}`, xZero, true, false, this.fontSize, 'orange');
+         this.renderText(`${this.hoverLocation.MathPoint.X}`, yZero, true, false, this.fontSize, 'orange');
       }
 
       //requestAnimationFrame(this.loop);
    }
 
    public Start(){
-      //this.loop();
       requestAnimationFrame(this.loop);
    }
 }

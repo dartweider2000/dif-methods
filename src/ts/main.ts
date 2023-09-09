@@ -1,5 +1,7 @@
 import Executer from "./modules/Executer";
 import Painter from "./modules/Painter";
+import Point from "./modules/Point";
+import Preset from "./modules/Preset";
 
 document.addEventListener('DOMContentLoaded', loadHandler);
 
@@ -17,6 +19,12 @@ function loadHandler(e: Event){
          checkbox.classList.toggle('_active');
       });
    }
+
+   const mapPresets = new Map<number, Preset>([
+      [1, new Preset(1, 2)],
+      [2, new Preset(0, 1)],
+      [3, new Preset(-20, 50)]
+   ]);
 
    const initSelect = () => {
       interface IOption{
@@ -68,6 +76,11 @@ function loadHandler(e: Event){
             customSelectLine.dataset.value = value;
             customSelectLine.textContent = text;
 
+            const preset = mapPresets.get(+value!);
+
+            (form.elements.namedItem('x_0') as HTMLInputElement).value = preset!.X_0.toString();
+            (form.elements.namedItem('y_0') as HTMLInputElement).value = preset!.Y_0.toString();
+
             customSelectEl.classList.remove('_active');
          }else if(el.closest('.custom-select__line')){
             customSelectEl.classList.toggle('_active');
@@ -77,8 +90,16 @@ function loadHandler(e: Event){
 
    initSelect();
 
+   let painter: Painter;
+   let pointList: Point[] | null = null;
+
    const canvasWrapper = document.querySelector('.content__wrapper') as HTMLElement;
    const canvas = canvasWrapper.firstElementChild as HTMLCanvasElement;
+
+   const reset = () => {
+      canvas.onmousemove = null;
+      (document.querySelector('.display') as HTMLElement).style.visibility = 'hidden';
+   }
 
    const initCanvas = () => {
       const resireHandler = () => {
@@ -87,12 +108,20 @@ function loadHandler(e: Event){
          canvas.width = width;
          canvas.height = width;
 
+         if(pointList){
+            reset();
+
+            painter = new Painter(pointList, canvas, +(form.elements.namedItem('xMax') as HTMLInputElement).value, window.innerWidth);
+            painter.Start();
+         }
         // console.log(canvasWrapper.offsetWidth);
       };
 
       resireHandler();
       window.addEventListener('resize', () => setTimeout(resireHandler, 100));
    }
+
+   initCanvas();
 
    const form: HTMLFormElement = document.querySelector('.form')!;
 
@@ -116,11 +145,11 @@ function loadHandler(e: Event){
       const executer = new Executer(tayInputValue, xMaxInputValue, xZeroInputValue, yZeroInputValue, selectValue);
       executer.Start();
 
-      initCanvas();
-      canvas.onmousemove = null;
-      (document.querySelector('.display') as HTMLElement).style.visibility = 'hidden';
+      reset();
 
-      const painter = new Painter(executer.PointList, canvas, xMaxInputValue);
+      pointList = executer.PointList;
+
+      painter = new Painter(pointList, canvas, xMaxInputValue, window.innerWidth);
       painter.Start();
    });
 }
