@@ -54,6 +54,8 @@ body{
 
    @media(max-width: 539px){
       grid-template: repeat(6, auto) / auto;
+      gap: 10px;
+      padding: 15px;
       width: 100%;
      // font-size: 14px;
 
@@ -66,6 +68,19 @@ body{
    &>*{
       font-size: inherit;
    }
+
+   
+   // .form__input-wrapper
+   &__input-wrapper {
+      display: grid;
+      gap: 10px;
+   }
+
+   // .form__label
+   &__label {
+      font-weight: 500;
+   }
+
    // .form__input
    &__input {
       padding: 10px;
