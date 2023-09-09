@@ -18,6 +18,31 @@ function loadHandler(e: Event){
       });
    }
 
+   const initSelect = () => {
+      interface IOption{
+         value: number | string; 
+         text: number | string;
+      }
+      const getOptionHtml = ({text, value}: IOption) => `<div data-value="${value}" class="custom-select__option">${text}</div>` 
+      const getCustomSelectHtml = (bodyHtml: IOption[], {text, value}: IOption) => {
+         return `<div class="select__custom-select custom-select">
+            <div data-value="${value}" class="custom-select__line">${text}</div>
+            <div class="custom-select__wrapper">${bodyHtml.join('')}</div>
+         </div>`;
+      }
+
+      const selectEl = document.querySelector('select') as HTMLSelectElement;
+      selectEl.hidden = true;
+
+      const optionList = Array.from(selectEl.options);
+
+
+
+      console.log(optionList);
+   }
+
+   initSelect();
+
    const canvasWrapper = document.querySelector('.content__wrapper') as HTMLElement;
    const canvas = canvasWrapper.firstElementChild as HTMLCanvasElement;
 

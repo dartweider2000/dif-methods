@@ -68,6 +68,9 @@ body{
          }
       }
    }
+   // .form__select
+   &__select {
+   }
    // .form__checkbox
    &__checkbox {
    }
@@ -80,7 +83,7 @@ body{
       color: white;
       transition: all 0.3s ease 0s;
       cursor: pointer;
-      grid-column: span 2;
+      //grid-column: span 2;
 
       &:hover{
          background: white;
@@ -179,5 +182,77 @@ body{
    &__value {
       font-size: 16px;
       // font-weight: 500;
+   }
+}
+
+.select {
+   // .select__el
+   &__el {
+      display: none;
+   }
+   // .select__option
+   &__option {
+   }
+   // .select__custom-select
+   &__custom-select {
+   }
+}
+.custom-select {
+   position: relative;
+   // .custom-select__line
+   &__line {
+      padding: 10px 50px 10px 10px;
+      font-size: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+      position: relative;
+      cursor: pointer;
+
+      &::before{
+         content: '+';
+         position: absolute;
+         top: 50%;
+         right: 10px;
+         transform: translate(0, -50%);
+         font-size: 30px;
+
+         ._active &{
+            transform: rotate(45deg);
+         }
+      }
+   }
+   // .custom-select__wrapper
+   &__wrapper {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      padding: 10px;
+      z-index: 10;
+      background: white;
+      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+      width: 100%;
+      border-radius: 5px;
+      //display: none;
+      transition: all 0.1s ease 0s;
+      opacity: 0;
+      visibility: hidden;
+
+      ._active &{
+         opacity: 1;
+         visibility: visible;
+      }
+   }
+   // .custom-select__option
+   &__option {
+      padding: 5px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.1s ease 0s;
+
+      &:hover{
+         background: orange;
+         color: white;
+      }
    }
 }

@@ -24,7 +24,8 @@ export default class Executer{
    }
 
    private getDerivate(): number{
-      return (this.y + 3.5 * (this.x - 1) - 3.5) / this.x;
+      //return (this.y + 3.5 * (this.x - 1) - 3.5) / this.x;
+      return Math.sin(this.x) + 1 / this.y;
    }
 
    private setNewY(): void{
