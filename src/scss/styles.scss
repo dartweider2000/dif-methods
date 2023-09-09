@@ -215,9 +215,10 @@ body{
          right: 10px;
          transform: translate(0, -50%);
          font-size: 30px;
+         transition: all 0.1s ease 0s;
 
          ._active &{
-            transform: rotate(45deg);
+            transform: translate(0, -50%) rotate(45deg);
          }
       }
    }

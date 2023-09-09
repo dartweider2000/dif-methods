@@ -26,7 +26,7 @@ export default class Painter{
 
       this.canvasPadding = 20;
       this.canvasSize = new Size(this.canvas.width - this.canvasPadding * 2, this.canvas.height - this.canvasPadding * 2);
-      this.pointRadius = 5;
+      this.pointRadius = 3;
 
       this.pointList = pointList;
       this.maxMinValues = this.fitlerPointList(this.pointList);
@@ -35,7 +35,7 @@ export default class Painter{
 
       this.executeAxis();
 
-      console.log(this.locations);
+      //console.log(this.locations);
 
       //this.printCoordLines();
 
@@ -48,33 +48,24 @@ export default class Painter{
          const {offsetX, offsetY} = e;
          const display = document.querySelector('.display') as HTMLElement;
 
-         // const loc = this.locations.find(loc => this.getRenderXLocation(loc.ProgramPoint.X - this.pointRadius) <= offsetX && 
-         //    this.getRenderXLocation(loc.ProgramPoint.X + this.pointRadius) >= offsetX && 
-         //    this.getRenderYLocation(loc.ProgramPoint.Y - this.pointRadius) <= offsetY && 
-         //    this.getRenderYLocation(loc.ProgramPoint.Y + this.pointRadius) >= offsetY
-         // );
-
-         const locArr = this.locations.filter(loc => 
-            this.getRenderYLocation(loc.ProgramPoint.Y - this.pointRadius) <= offsetY && 
-            this.getRenderYLocation(loc.ProgramPoint.Y + this.pointRadius) >= offsetY
-         );
-
-
          let loc: FullLocations | null;
+
+         loc = this.locations.reduce((result: {'loc': FullLocations, 'hypot': number}, value) => {
+            const xPoint = this.getRenderXLocation(value.ProgramPoint.X);
+            const yPoint = this.getRenderXLocation(value.ProgramPoint.Y);
+
+            const xLength = Math.abs(xPoint - offsetX);
+            const yLength = Math.abs(yPoint - offsetY);
+            const hypot = Math.hypot(xLength, yLength);
+
+            if(hypot < result.hypot){
+               result.loc = value;
+               result.hypot = hypot;
+            }
+
+            return result;
+         }, {'loc': this.locations[0], 'hypot': Infinity}).loc;
          
-         if(locArr.length === 1){
-            loc = locArr.pop()!;
-         }else{
-            loc = locArr.find(loc => this.getRenderXLocation(loc.ProgramPoint.X - this.pointRadius) <= offsetX && 
-               this.getRenderXLocation(loc.ProgramPoint.X + this.pointRadius) >= offsetX &&
-               this.getRenderYLocation(loc.ProgramPoint.Y - this.pointRadius) <= offsetY && 
-               this.getRenderYLocation(loc.ProgramPoint.Y + this.pointRadius) >= offsetY
-            )!;
-         }
-
-
-         //console.log(loc);
-      
          if(!loc)
             return;
 
@@ -181,10 +172,10 @@ export default class Painter{
       const scaleCoordX = canvasWidth / (Math.abs(highX) + Math.abs(lowX));
       const scaleCoordY = canvasHeight / (Math.abs(highY) + Math.abs(lowY));
 
-      console.log(highX, lowX, highY, lowY);
-      console.log(canvasWidth, canvasHeight);
+      // console.log(highX, lowX, highY, lowY);
+      // console.log(canvasWidth, canvasHeight);
 
-      console.log(scaleCoordX, scaleCoordY);
+      // console.log(scaleCoordX, scaleCoordY);
 
       return new Point(scaleCoordX, scaleCoordY);
    }

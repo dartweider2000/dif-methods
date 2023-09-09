@@ -9,7 +9,9 @@ export default class Executer{
 
    private pointList: Point[];
 
-   constructor(tay: number, x_max: number, x_0: number, y_0: number){
+   private funcId: number;
+
+   constructor(tay: number, x_max: number, x_0: number, y_0: number, functId: number){
       if(this.x_max < x_0)
          throw new Error();
 
@@ -19,13 +21,21 @@ export default class Executer{
       this.x= x_0;
       this.y = y_0;
 
+      this.funcId = functId;
+
       this.pointList = [];
       this.addToList();
    }
 
    private getDerivate(): number{
-      //return (this.y + 3.5 * (this.x - 1) - 3.5) / this.x;
-      return Math.sin(this.x) + 1 / this.y;
+      switch(this.funcId){
+         case 1:
+            return (this.y + 3.5 * (this.x - 1) - 3.5) / this.x;
+         case 2:
+            return Math.sin(this.x) + 1 / this.y;
+         default:
+            return (this.y + 3.5 * (this.x - 1) - 3.5) / this.x;
+      }
    }
 
    private setNewY(): void{
@@ -47,7 +57,7 @@ export default class Executer{
          this.addToList();
       }
 
-      console.log(this.pointList);
+      //console.log(this.pointList);
    }
 
    public Start(): void{

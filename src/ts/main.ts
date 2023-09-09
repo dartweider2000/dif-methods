@@ -24,7 +24,7 @@ function loadHandler(e: Event){
          text: number | string;
       }
       const getOptionHtml = ({text, value}: IOption) => `<div data-value="${value}" class="custom-select__option">${text}</div>` 
-      const getCustomSelectHtml = (bodyHtml: IOption[], {text, value}: IOption) => {
+      const getCustomSelectHtml = (bodyHtml: string[], {text, value}: IOption) => {
          return `<div class="select__custom-select custom-select">
             <div data-value="${value}" class="custom-select__line">${text}</div>
             <div class="custom-select__wrapper">${bodyHtml.join('')}</div>
@@ -34,11 +34,45 @@ function loadHandler(e: Event){
       const selectEl = document.querySelector('select') as HTMLSelectElement;
       selectEl.hidden = true;
 
-      const optionList = Array.from(selectEl.options);
+      const optionList: HTMLOptionElement[] = Array.from(selectEl.options);
+      const {bodyHtml, selected} = optionList.reduce((result: {'bodyHtml': string[], 'selected': IOption }, option: HTMLOptionElement) => {
 
+         const optionData: IOption = {'text': option.textContent!, 'value': option.value} ;
 
+         result.bodyHtml.push(getOptionHtml(optionData));
 
-      console.log(optionList);
+         if(option.selected)
+            result.selected = optionData;
+
+         return result;
+      }, {'bodyHtml': [], 'selected': {'text': optionList[0].textContent!, 'value': optionList[0].value}});
+
+      const customSelectHTML = getCustomSelectHtml(bodyHtml, selected);
+      selectEl.parentElement?.insertAdjacentHTML('beforeend', customSelectHTML);
+
+      const customSelectEl = selectEl.parentElement?.lastElementChild! as HTMLElement;
+      const customSelectLine = customSelectEl.firstElementChild! as HTMLElement;
+
+      customSelectEl.addEventListener('click', e => {
+         const el = e.target as HTMLElement;
+
+         if(el.closest('.custom-select__option')){
+            const customOption = el.closest('.custom-select__option') as HTMLElement;
+
+            const value = customOption.dataset.value;
+            const text = customOption.textContent!;
+
+            selectEl.value = value!;
+            //console.log(selectEl.value);
+
+            customSelectLine.dataset.value = value;
+            customSelectLine.textContent = text;
+
+            customSelectEl.classList.remove('_active');
+         }else if(el.closest('.custom-select__line')){
+            customSelectEl.classList.toggle('_active');
+         }
+      });
    }
 
    initSelect();
@@ -53,7 +87,7 @@ function loadHandler(e: Event){
          canvas.width = width;
          canvas.height = width;
 
-         console.log(canvasWrapper.offsetWidth);
+        // console.log(canvasWrapper.offsetWidth);
       };
 
       resireHandler();
@@ -66,6 +100,7 @@ function loadHandler(e: Event){
    const tayInput = form.elements.namedItem('tay') as HTMLInputElement;
    const xZeroInput = form.elements.namedItem('x_0') as HTMLInputElement;
    const yZeroInput = form.elements.namedItem('y_0') as HTMLInputElement;
+   const seclectEl = document.querySelector('select') as HTMLSelectElement;
 
    form.addEventListener('submit', e => {
       e.preventDefault();
@@ -74,10 +109,11 @@ function loadHandler(e: Event){
       const tayInputValue: number = +tayInput.value;
       const xZeroInputValue: number = +xZeroInput.value;
       const yZeroInputValue: number = +yZeroInput.value;
+      const selectValue: number = +seclectEl.value;
 
-      console.log(xMaxInputValue, tayInputValue, xZeroInputValue, yZeroInputValue);
+      //console.log(xMaxInputValue, tayInputValue, xZeroInputValue, yZeroInputValue);
 
-      const executer = new Executer(tayInputValue, xMaxInputValue, xZeroInputValue, yZeroInputValue);
+      const executer = new Executer(tayInputValue, xMaxInputValue, xZeroInputValue, yZeroInputValue, selectValue);
       executer.Start();
 
       initCanvas();
