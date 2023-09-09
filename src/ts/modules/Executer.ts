@@ -34,7 +34,7 @@ export default class Executer{
          case 2:
             return Math.sin(this.x) + 1 / this.y;
          case 3:
-            return this.y**2 - 2 * this.y;
+            return -(this.x**2) + this.y;
          default:
             return (this.y + 3.5 * (this.x - 1) - 3.5) / this.x;
       }
@@ -46,6 +46,9 @@ export default class Executer{
 
    private setNewX(): void{
       this.x += this.tay;
+
+      // if(!this.x)
+      //    this.setNewX();
    }
 
    private addToList(): void{

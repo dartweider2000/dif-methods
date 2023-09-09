@@ -22,6 +22,8 @@ export default class Painter{
    constructor(pointList: Point[], canvas: HTMLCanvasElement){
       this.canvas = canvas;
       this.cx = this.canvas.getContext('2d')!;
+      //this.cx.transform(1, 0, 0, -1, 0, this.canvas.height);
+
       this.axisBigData = new AxisBigData();
       this.hoverLocation = null;
 
@@ -37,7 +39,7 @@ export default class Painter{
 
       this.executeAxis();
 
-      //console.log(this.locations);
+      console.log(this.locations);
 
       console.log(this.minMaxValues);
 
@@ -93,28 +95,29 @@ export default class Painter{
 
       if(this.minMaxValues.XMin < 0){
          const start = this.locations.find(loc => loc.MathPoint.X == this.minMaxValues.XMin)!;
-         this.axisBigData.X.start = new AxisData(`${~~start.MathPoint.X}`, new Point(start.ProgramPoint.X, this.axisBigData.Zero.Point.Y));
+         this.axisBigData.X.start = new AxisData(`${Math.round(start.MathPoint.X)}`, new Point(start.ProgramPoint.X, this.axisBigData.Zero.Point.Y));
       }else{
          this.axisBigData.X.start = this.axisBigData.Zero;
       } 
 
       if(this.minMaxValues.XMax > 0){
          const end = this.locations.find(loc => loc.MathPoint.X == this.minMaxValues.XMax)!;
-         this.axisBigData.X.end = new AxisData(`${~~end.MathPoint.X}`, new Point(end.ProgramPoint.X, this.axisBigData.Zero.Point.Y));
+         this.axisBigData.X.end = new AxisData(`${Math.round(end.MathPoint.X)}`, new Point(end.ProgramPoint.X, this.axisBigData.Zero.Point.Y));
       }else{
          this.axisBigData.X.end = this.axisBigData.Zero;
       } 
 
       if(this.minMaxValues.YMin < 0){
          const start = this.locations.find(loc => loc.MathPoint.Y == this.minMaxValues.YMin)!;
-         this.axisBigData.Y.start = new AxisData(`${~~start.MathPoint.Y}`, new Point(this.axisBigData.Zero.Point.X, start.ProgramPoint.Y));
+         this.axisBigData.Y.start = new AxisData(`${Math.round(start.MathPoint.Y)}`, new Point(this.axisBigData.Zero.Point.X, start.ProgramPoint.Y));
       }else{
+         console.log('!!');
          this.axisBigData.Y.start = this.axisBigData.Zero;
       } 
 
       if(this.minMaxValues.YMax > 0){
          const end = this.locations.find(loc => loc.MathPoint.Y == this.minMaxValues.YMax)!;
-         this.axisBigData.Y.end = new AxisData(`${~~end.MathPoint.Y}`, new Point(this.axisBigData.Zero.Point.X, end.ProgramPoint.Y));
+         this.axisBigData.Y.end = new AxisData(`${Math.round(end.MathPoint.Y)}`, new Point(this.axisBigData.Zero.Point.X, end.ProgramPoint.Y));
       }else{
          this.axisBigData.Y.end = this.axisBigData.Zero;
       } 
@@ -194,12 +197,26 @@ export default class Painter{
    }
 
    private convertYLocation(y: number): number{
-      return this.canvasSize.Height - Math.abs(y) * this.scaleMetrix.Y;
+      return this.canvasSize.Height - y * this.scaleMetrix.Y;
+      //return this.canvasSize.Height - y * this.scaleMetrix.Y;
    }
 
    //private 
    private convertLocations(pointList: Point[]): FullLocations[]{
-      return pointList.map(mathPoint => new FullLocations(new Point(this.convertXLocation(mathPoint.X), this.convertYLocation(mathPoint.Y)), mathPoint));
+      let dopX = 0;
+      let dopY = 0;
+      
+      if(this.minMaxValues.XMin < 0){
+         dopX = Math.abs(this.minMaxValues.XMin);
+      }
+
+      if(this.minMaxValues.YMin < 0){
+         dopY = Math.abs(this.minMaxValues.YMin);
+      }
+
+      const helpArray: Point[] = pointList.map(point => new Point(point.X + dopX, point.Y + dopY));
+
+      return pointList.map((mathPoint, index) => new FullLocations(new Point(this.convertXLocation(helpArray[index].X), this.convertYLocation(helpArray[index].Y)), mathPoint));
    }
 
    private renderArc(point: Point, radius: number = this.pointRadius, color: string = 'red'){
