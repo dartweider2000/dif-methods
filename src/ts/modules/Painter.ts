@@ -10,7 +10,6 @@ export default class Painter{
    private cx: CanvasRenderingContext2D;
    private scaleMetrix: Point;
    private canvas: HTMLCanvasElement;
-   private maxMinValues: [number, number, number, number];
    private canvasSize: Size;
    private canvasPadding: number;
    private pointList: Point[];
@@ -19,20 +18,18 @@ export default class Painter{
    private minMaxValues: MinMaxValues;
    private hoverLocation: FullLocations | null;
 
-   constructor(pointList: Point[], canvas: HTMLCanvasElement){
+   constructor(pointList: Point[], canvas: HTMLCanvasElement, xMax: number){
       this.canvas = canvas;
       this.cx = this.canvas.getContext('2d')!;
-      //this.cx.transform(1, 0, 0, -1, 0, this.canvas.height);
 
       this.axisBigData = new AxisBigData();
       this.hoverLocation = null;
 
-      this.canvasPadding = 20;
+      this.canvasPadding = 30;
       this.canvasSize = new Size(this.canvas.width - this.canvasPadding * 2, this.canvas.height - this.canvasPadding * 2);
-      this.pointRadius = 3;
+      this.pointRadius = this.executeRadius(xMax);
 
       this.pointList = pointList;
-      // this.maxMinValues = this.fitlerPointList(this.pointList);
       this.minMaxValues = new MinMaxValues(...this.fitlerPointList(this.pointList));
       this.scaleMetrix = this.printCoordLines();
       this.locations = this.convertLocations(this.pointList);
@@ -81,35 +78,51 @@ export default class Painter{
          display.querySelector('.display__value_y')!.textContent = `${loc?.MathPoint.Y}`;
 
          this.hoverLocation = loc;
+
+         requestAnimationFrame(this.loop);
       };
+   }
+
+   private executeRadius(xMax: number): number{
+      // if(xMax <= 10){
+      //    return 10;
+      // }else 
+      if(xMax <= 150){
+         return 5;
+      }else if(xMax <= 300){
+         return 3;
+      }else if(xMax <= 800){
+         return 1;
+      }else{
+         return 0.5;
+      }
    }
 
    private executeAxis(): void{
       const deltaXZero = this.minMaxValues.XMin > 0 ? 0 : 0 - this.minMaxValues.XMin;
       const deltaYZero = this.minMaxValues.YMin > 0 ? 0 : 0 - this.minMaxValues.YMin;
 
-      //console.log(this.maxMinValues);
       console.log(deltaXZero, deltaYZero);
       
       this.axisBigData.Zero = new AxisData('0', new Point(this.convertXLocation(deltaXZero), this.convertYLocation(deltaYZero)));
 
       if(this.minMaxValues.XMin < 0){
          const start = this.locations.find(loc => loc.MathPoint.X == this.minMaxValues.XMin)!;
-         this.axisBigData.X.start = new AxisData(`${Math.round(start.MathPoint.X)}`, new Point(start.ProgramPoint.X, this.axisBigData.Zero.Point.Y));
+         this.axisBigData.X.start = new AxisData(`${start.MathPoint.X.toFixed(1)}`, new Point(start.ProgramPoint.X, this.axisBigData.Zero.Point.Y));
       }else{
          this.axisBigData.X.start = this.axisBigData.Zero;
       } 
 
       if(this.minMaxValues.XMax > 0){
          const end = this.locations.find(loc => loc.MathPoint.X == this.minMaxValues.XMax)!;
-         this.axisBigData.X.end = new AxisData(`${Math.round(end.MathPoint.X)}`, new Point(end.ProgramPoint.X, this.axisBigData.Zero.Point.Y));
+         this.axisBigData.X.end = new AxisData(`${end.MathPoint.X.toFixed(1)}`, new Point(end.ProgramPoint.X, this.axisBigData.Zero.Point.Y));
       }else{
          this.axisBigData.X.end = this.axisBigData.Zero;
       } 
 
       if(this.minMaxValues.YMin < 0){
          const start = this.locations.find(loc => loc.MathPoint.Y == this.minMaxValues.YMin)!;
-         this.axisBigData.Y.start = new AxisData(`${Math.round(start.MathPoint.Y)}`, new Point(this.axisBigData.Zero.Point.X, start.ProgramPoint.Y));
+         this.axisBigData.Y.start = new AxisData(`${start.MathPoint.Y.toFixed(1)}`, new Point(this.axisBigData.Zero.Point.X, start.ProgramPoint.Y));
       }else{
          console.log('!!');
          this.axisBigData.Y.start = this.axisBigData.Zero;
@@ -117,7 +130,7 @@ export default class Painter{
 
       if(this.minMaxValues.YMax > 0){
          const end = this.locations.find(loc => loc.MathPoint.Y == this.minMaxValues.YMax)!;
-         this.axisBigData.Y.end = new AxisData(`${Math.round(end.MathPoint.Y)}`, new Point(this.axisBigData.Zero.Point.X, end.ProgramPoint.Y));
+         this.axisBigData.Y.end = new AxisData(`${end.MathPoint.Y.toFixed(1)}`, new Point(this.axisBigData.Zero.Point.X, end.ProgramPoint.Y));
       }else{
          this.axisBigData.Y.end = this.axisBigData.Zero;
       } 
@@ -129,14 +142,20 @@ export default class Painter{
       if(!this.axisBigData.X.start || !this.axisBigData.Y.start || !this.axisBigData.X.end || !this.axisBigData.Y.end) 
          return;  
 
-
       this.rederLine(this.axisBigData.X.start.Point, this.axisBigData.X.end.Point);
       this.rederLine(this.axisBigData.Y.start.Point, this.axisBigData.Y.end.Point);
 
 
+      this.renderText(this.axisBigData.Zero!.Value, this.axisBigData.Zero!.Point, true);
+
       this.renderText(this.axisBigData.Y.end.Value, this.axisBigData.Y.end.Point);
-      this.renderText(this.axisBigData.Y.start.Value, this.axisBigData.Y.start.Point, true);
       this.renderText(this.axisBigData.X.end.Value, this.axisBigData.X.end.Point, true, true);
+
+      if(this.axisBigData.Zero!.Point.X !== this.axisBigData.X.start.Point.X)
+         this.renderText(this.axisBigData.X.start.Value, this.axisBigData.X.start.Point, true, true);
+
+      if(this.axisBigData.Zero!.Point.Y !== this.axisBigData.Y.start.Point.Y)
+         this.renderText(this.axisBigData.Y.start.Value, this.axisBigData.Y.start.Point, true);
    }
 
    private renderText(text: string | number, point: Point, isUp: boolean = false, isNear: boolean = false, fontSize: number = 30, color: string = 'black'){
@@ -256,7 +275,7 @@ export default class Painter{
          this.renderText(`${this.hoverLocation.MathPoint.X}`, yZero, true, false, 25, 'orange');
       }
 
-      requestAnimationFrame(this.loop);
+      //requestAnimationFrame(this.loop);
    }
 
    public Start(){

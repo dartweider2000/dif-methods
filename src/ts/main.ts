@@ -120,7 +120,7 @@ function loadHandler(e: Event){
       canvas.onmousemove = null;
       (document.querySelector('.display') as HTMLElement).style.visibility = 'hidden';
 
-      const painter = new Painter(executer.PointList, canvas);
+      const painter = new Painter(executer.PointList, canvas, xMaxInputValue);
       painter.Start();
    });
 }
