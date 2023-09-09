@@ -90,6 +90,14 @@ function loadHandler(e: Event){
 
    initSelect();
 
+   document.addEventListener('click', e => {
+      const el = e.target as HTMLElement;
+
+      if(!el.closest('.custom-select._active')){
+         document.querySelector('.custom-select')?.classList.remove('_active');
+      }
+   });
+
    let painter: Painter;
    let pointList: Point[] | null = null;
 
@@ -140,7 +148,7 @@ function loadHandler(e: Event){
       const yZeroInputValue: number = +yZeroInput.value;
       const selectValue: number = +seclectEl.value;
 
-      console.log(xMaxInputValue, tayInputValue, xZeroInputValue, yZeroInputValue);
+      //console.log(xMaxInputValue, tayInputValue, xZeroInputValue, yZeroInputValue);
 
       const executer = new Executer(tayInputValue, xMaxInputValue, xZeroInputValue, yZeroInputValue, selectValue);
       executer.Start();

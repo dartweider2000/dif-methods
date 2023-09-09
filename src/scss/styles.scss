@@ -115,9 +115,11 @@ body{
       cursor: pointer;
       //grid-column: span 2;
 
-      &:hover{
-         background: white;
-         color: blue;
+      @media(hover: hover){
+         &:hover{
+            background: white;
+            color: blue;
+         }
       }
    }
 }

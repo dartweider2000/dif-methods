@@ -22,7 +22,6 @@ export default class Executer{
       this.y = y_0;
 
       this.funcId = functId;
-      console.log(this.funcId);
 
       this.pointList = [];
       this.addToList();

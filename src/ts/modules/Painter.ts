@@ -40,9 +40,9 @@ export default class Painter{
 
       this.executeAxis();
 
-      console.log(this.locations);
+      //console.log(this.locations);
 
-      console.log(this.minMaxValues);
+      //console.log(this.minMaxValues);
 
       //this.printCoordLines();
 
@@ -124,7 +124,7 @@ export default class Painter{
       const deltaXZero = this.minMaxValues.XMin > 0 ? 0 : 0 - this.minMaxValues.XMin;
       const deltaYZero = this.minMaxValues.YMin > 0 ? 0 : 0 - this.minMaxValues.YMin;
 
-      console.log(deltaXZero, deltaYZero);
+      //console.log(deltaXZero, deltaYZero);
       
       this.axisBigData.Zero = new AxisData('0', new Point(this.convertXLocation(deltaXZero), this.convertYLocation(deltaYZero)));
 
@@ -146,7 +146,6 @@ export default class Painter{
          const start = this.locations.find(loc => loc.MathPoint.Y == this.minMaxValues.YMin)!;
          this.axisBigData.Y.start = new AxisData(`${start.MathPoint.Y.toFixed(1)}`, new Point(this.axisBigData.Zero.Point.X, start.ProgramPoint.Y));
       }else{
-         console.log('!!');
          this.axisBigData.Y.start = this.axisBigData.Zero;
       } 
 
@@ -157,7 +156,7 @@ export default class Painter{
          this.axisBigData.Y.end = this.axisBigData.Zero;
       } 
 
-      console.log(this.axisBigData);
+      //console.log(this.axisBigData);
    }
 
    private renderAxis(): void{
