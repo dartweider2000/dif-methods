@@ -80,6 +80,7 @@ body{
       color: white;
       transition: all 0.3s ease 0s;
       cursor: pointer;
+      grid-column: span 2;
 
       &:hover{
          background: white;
@@ -150,4 +151,33 @@ body{
 }
 
 .canvas {
+}
+
+.display {
+   position: fixed;
+   top: 0;
+   left: 0;
+   display: grid;
+   padding: 15px;
+   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+   border-radius: 5px;
+   overflow: hidden;
+   gap: 10px;
+   background: white;
+   // .display__place
+   &__place {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+   }
+   // .display__title
+   &__title {
+      font-size: 20px;
+      font-weight: 700;
+   }
+   // .display__value
+   &__value {
+      font-size: 16px;
+      // font-weight: 500;
+   }
 }
