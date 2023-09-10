@@ -35,8 +35,8 @@ export default class Executer{
             return Math.sin(this.x) + 1 / this.y;
          case 3:
             return this.x**2 - 2 * this.y - 50;
-         // case 4:
-         //    return 2 * this.y + this.x;
+         case 4:
+            return 2 * this.y + this.x;
          default:
             return (this.y + 3.5 * (this.x - 1) - 3.5) / this.x;
       }

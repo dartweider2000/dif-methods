@@ -42,7 +42,7 @@ export default class Painter{
 
       //console.log(this.locations);
 
-      //console.log(this.minMaxValues);
+      console.log(this.minMaxValues);
 
       //this.printCoordLines();
 
@@ -156,7 +156,7 @@ export default class Painter{
          this.axisBigData.Y.end = this.axisBigData.Zero;
       } 
 
-      //console.log(this.axisBigData);
+      console.log(this.axisBigData);
    }
 
    private renderAxis(): void{
@@ -167,25 +167,35 @@ export default class Painter{
       this.rederLine(this.axisBigData.Y.start.Point, this.axisBigData.Y.end.Point);
 
 
-      this.renderText(this.axisBigData.Zero!.Value, this.axisBigData.Zero!.Point, true);
+      this.renderText(this.axisBigData.Zero!.Value, this.axisBigData.Zero!.Point, true, false, this.fontSize, 'black', true, false, true);
 
-      this.renderText(this.axisBigData.Y.end.Value, this.axisBigData.Y.end.Point);
-      this.renderText(this.axisBigData.X.end.Value, this.axisBigData.X.end.Point, true, true);
+      if(this.axisBigData.Zero!.Point.Y !== this.axisBigData.Y.end.Point.Y)
+         this.renderText(this.axisBigData.Y.end.Value, this.axisBigData.Y.end.Point);
+
+      if(this.axisBigData.Zero!.Point.X !== this.axisBigData.X.end.Point.X)
+         this.renderText(this.axisBigData.X.end.Value, this.axisBigData.X.end.Point, true, true, this.fontSize, 'black', false, false, true);
 
       if(this.axisBigData.Zero!.Point.X !== this.axisBigData.X.start.Point.X)
-         this.renderText(this.axisBigData.X.start.Value, this.axisBigData.X.start.Point, true, true);
+         this.renderText(this.axisBigData.X.start.Value, this.axisBigData.X.start.Point, true, true, this.fontSize, 'black', false, false, true);
 
       if(this.axisBigData.Zero!.Point.Y !== this.axisBigData.Y.start.Point.Y)
          this.renderText(this.axisBigData.Y.start.Value, this.axisBigData.Y.start.Point, true);
    }
 
-   private renderText(text: string | number, point: Point, isUp: boolean = false, isNear: boolean = false, fontSize: number = this.fontSize, color: string = 'black'){
+   private renderText(text: string | number, point: Point, isUp: boolean = false, isNear: boolean = false, 
+      fontSize: number = this.fontSize, color: string = 'black', 
+      isMakeRightLeftExecute: boolean = true, isPointExecute: boolean = false, isMakeUpDownExecute: boolean = false )
+   {  
+      let dopX = !isMakeRightLeftExecute || this.isRightPathGreatestThanLeft(isPointExecute ? point : null) ? 0 : (`${text}`.length + 1) * this.fontSize / 2;
+      let dopY = isMakeUpDownExecute && !this.isUpPathGreatestThanDown() ? this.fontSize : 0;
+      //let dopX = 0;
+
       this.cx.fillStyle = color;
       this.cx.font = `${fontSize}px serif`;
       this.cx.fillText(
          `${text}`,
-         this.getRenderXLocation(isNear ? point.X - fontSize : point.X + fontSize / 4),
-         this.getRenderXLocation(isUp ? point.Y - fontSize / 4 : point.Y + fontSize / 4)
+         this.getRenderXLocation((isNear ? point.X - fontSize : point.X + fontSize / 4) - dopX),
+         this.getRenderYLocation((isUp ? point.Y - fontSize / 4 : point.Y + fontSize / 4) + dopY)
       );
    }
 
@@ -221,8 +231,8 @@ export default class Painter{
       const canvasWidth = this.canvasSize.Width;
       const canvasHeight = this.canvasSize.Height;
 
-      const scaleCoordX = canvasWidth / (Math.abs(this.minMaxValues.XMax) + (this.minMaxValues.XMin > 0 ? 0 : Math.abs(this.minMaxValues.XMin)));
-      const scaleCoordY = canvasHeight / (Math.abs(this.minMaxValues.YMax) + (this.minMaxValues.YMin > 0 ? 0 : Math.abs(this.minMaxValues.YMin)));
+      const scaleCoordX = canvasWidth / ((this.minMaxValues.XMax < 0 ? 0 : Math.abs(this.minMaxValues.XMax)) + (this.minMaxValues.XMin > 0 ? 0 : Math.abs(this.minMaxValues.XMin)));
+      const scaleCoordY = canvasHeight / ((this.minMaxValues.YMax < 0 ? 0 : Math.abs(this.minMaxValues.YMax)) + (this.minMaxValues.YMin > 0 ? 0 : Math.abs(this.minMaxValues.YMin)));
 
       // console.log(highX, lowX, highY, lowY);
       // console.log(canvasWidth, canvasHeight);
@@ -279,6 +289,38 @@ export default class Painter{
       this.cx.fillRect(0, 0, this.canvas.width, this.canvas.height);
    }
 
+   private isRightPathGreatestThanLeft(point: Point | null): boolean{
+
+      if(point)
+         return this.canvas.width -  this.canvas.width / 2 >= point.X;
+
+      if(this.minMaxValues.XMax <= 0)
+         return false;
+
+      if(this.minMaxValues.XMin >= 0)
+         return true;
+
+      //console.log(Math.abs(this.minMaxValues.XMax), (Math.abs(this.minMaxValues.XMin) / 4));
+
+      return Math.abs(this.minMaxValues.XMax) > (Math.abs(this.minMaxValues.XMin) / 5)
+   }
+
+   private isUpPathGreatestThanDown(): boolean{
+
+      // if(point)
+      //    return this.canvas.height -  this.canvas.height / 2 >= point.Y;
+
+      if(this.minMaxValues.YMax <= 0)
+         return false;
+
+      if(this.minMaxValues.YMin >= 0)
+         return true;
+
+     // console.log(Math.abs(this.minMaxValues.YMax), (Math.abs(this.minMaxValues.YMin) / 4));
+
+      return Math.abs(this.minMaxValues.YMax) > (Math.abs(this.minMaxValues.YMin) / 5)
+   }
+
    private loop(){
       this.cx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.renderBackground();
@@ -293,7 +335,7 @@ export default class Painter{
          this.rederLine(this.hoverLocation.ProgramPoint, yZero, 'green');
 
          this.renderText(`${this.hoverLocation.MathPoint.Y}`, xZero, true, false, this.fontSize, 'orange');
-         this.renderText(`${this.hoverLocation.MathPoint.X}`, yZero, true, false, this.fontSize, 'orange');
+         this.renderText(`${this.hoverLocation.MathPoint.X}`, yZero, true, false, this.fontSize, 'orange', true, true);
       }
 
       //requestAnimationFrame(this.loop);

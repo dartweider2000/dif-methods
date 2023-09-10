@@ -23,8 +23,11 @@ function loadHandler(e: Event){
    const mapPresets = new Map<number, Preset>([
       [1, new Preset(1, 2)],
       [2, new Preset(0, 1)],
-      [3, new Preset(-20, 50)]
+      [3, new Preset(-20, 50)],
+      //[4, new Preset(1, 2)]
    ]);
+
+   const form: HTMLFormElement = document.querySelector('.form')!;
 
    const initSelect = () => {
       interface IOption{
@@ -60,6 +63,10 @@ function loadHandler(e: Event){
 
       const customSelectEl = selectEl.parentElement?.lastElementChild! as HTMLElement;
       const customSelectLine = customSelectEl.firstElementChild! as HTMLElement;
+
+      const preset = mapPresets.get(+selectEl.value!);
+      (form.elements.namedItem('x_0') as HTMLInputElement).value = preset!.X_0.toString();
+      (form.elements.namedItem('y_0') as HTMLInputElement).value = preset!.Y_0.toString();
 
       customSelectEl.addEventListener('click', e => {
          const el = e.target as HTMLElement;
@@ -131,7 +138,7 @@ function loadHandler(e: Event){
 
    initCanvas();
 
-   const form: HTMLFormElement = document.querySelector('.form')!;
+   // const form: HTMLFormElement = document.querySelector('.form')!;
 
    const xMaxInput = form.elements.namedItem('xMax') as HTMLInputElement;
    const tayInput = form.elements.namedItem('tay') as HTMLInputElement;
