@@ -121,7 +121,9 @@ function loadHandler(e: Event){
          const width = canvasWrapper.parentElement!.offsetWidth;
 
          canvas.width = width;
-         canvas.height = width;
+
+         if(document.body.classList.contains('submited'))
+            canvas.height = width;
 
          if(pointList){
             reset();
@@ -149,6 +151,9 @@ function loadHandler(e: Event){
    form.addEventListener('submit', e => {
       e.preventDefault();
 
+      document.body.classList.add('submited');
+      window.dispatchEvent(new Event('resize'));
+
       const xMaxInputValue: number = +xMaxInput.value;
       const tayInputValue: number = +tayInput.value;
       const xZeroInputValue: number = +xZeroInput.value;
@@ -160,11 +165,19 @@ function loadHandler(e: Event){
       const executer = new Executer(tayInputValue, xMaxInputValue, xZeroInputValue, yZeroInputValue, selectValue);
       executer.Start();
 
+      //initCanvas();
+
       reset();
 
       pointList = executer.PointList;
 
-      painter = new Painter(pointList, canvas, xMaxInputValue, window.innerWidth);
-      painter.Start();
+      window.dispatchEvent(new Event('resize'));
+      
+      // setTimeout(() => {
+      //    painter = new Painter(pointList!, canvas, xMaxInputValue, window.innerWidth);
+      //    painter.Start();
+      // }, 10);
+      // painter = new Painter(pointList, canvas, xMaxInputValue, window.innerWidth);
+      // painter.Start();
    });
 }

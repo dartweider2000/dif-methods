@@ -19,9 +19,23 @@ export default class Painter{
    private hoverLocation: FullLocations | null;
    private fontSize: number;
 
+   private graphColor: string;
+   private axisColor: string;
+   private axisNumbersColor: string;
+   private pointLocationColor: string;
+   private lineLocationColor: string;
+   private canvasBackground: string;
+
    constructor(pointList: Point[], canvas: HTMLCanvasElement, xMax: number, innderWidth: number){
       this.canvas = canvas;
       this.cx = this.canvas.getContext('2d')!;
+
+      this.graphColor = 'red';
+      this.axisColor = 'black';
+      this.axisNumbersColor = 'black';
+      this.pointLocationColor = 'orange';
+      this.lineLocationColor = 'green';
+      this.canvasBackground = '#edece9';
 
       this.axisBigData = new AxisBigData();
       this.hoverLocation = null;
@@ -31,7 +45,6 @@ export default class Painter{
       this.pointRadius = this.executeRadius(xMax, innderWidth);
 
       this.canvasSize = new Size(this.canvas.width - this.canvasPadding * 2, this.canvas.height - this.canvasPadding * 2);
-      //this.pointRadius = this.executeRadius(xMax, innderWidth);
 
       this.pointList = pointList;
       this.minMaxValues = new MinMaxValues(...this.fitlerPointList(this.pointList));
@@ -47,9 +60,6 @@ export default class Painter{
       //this.printCoordLines();
 
       this.loop = this.loop.bind(this);
-
-      this.cx.fillStyle = 'orange';
-      this.cx.fillRect(0, 0, canvas.width, canvas.height);
 
       this.canvas.onmousemove = e => {
          const {offsetX, offsetY} = e;
@@ -167,28 +177,27 @@ export default class Painter{
       this.rederLine(this.axisBigData.Y.start.Point, this.axisBigData.Y.end.Point);
 
 
-      this.renderText(this.axisBigData.Zero!.Value, this.axisBigData.Zero!.Point, true, false, this.fontSize, 'black', true, false, true);
+      this.renderText(this.axisBigData.Zero!.Value, this.axisBigData.Zero!.Point, true, false, this.fontSize, this.axisColor, true, false, true);
 
       if(this.axisBigData.Zero!.Point.Y !== this.axisBigData.Y.end.Point.Y)
          this.renderText(this.axisBigData.Y.end.Value, this.axisBigData.Y.end.Point);
 
       if(this.axisBigData.Zero!.Point.X !== this.axisBigData.X.end.Point.X)
-         this.renderText(this.axisBigData.X.end.Value, this.axisBigData.X.end.Point, true, true, this.fontSize, 'black', false, false, true);
+         this.renderText(this.axisBigData.X.end.Value, this.axisBigData.X.end.Point, true, true, this.fontSize, this.axisColor, false, false, true);
 
       if(this.axisBigData.Zero!.Point.X !== this.axisBigData.X.start.Point.X)
-         this.renderText(this.axisBigData.X.start.Value, this.axisBigData.X.start.Point, true, true, this.fontSize, 'black', false, false, true);
+         this.renderText(this.axisBigData.X.start.Value, this.axisBigData.X.start.Point, true, true, this.fontSize, this.axisColor, false, false, true);
 
       if(this.axisBigData.Zero!.Point.Y !== this.axisBigData.Y.start.Point.Y)
          this.renderText(this.axisBigData.Y.start.Value, this.axisBigData.Y.start.Point, true);
    }
 
    private renderText(text: string | number, point: Point, isUp: boolean = false, isNear: boolean = false, 
-      fontSize: number = this.fontSize, color: string = 'black', 
+      fontSize: number = this.fontSize, color: string = this.axisNumbersColor, 
       isMakeRightLeftExecute: boolean = true, isPointExecute: boolean = false, isMakeUpDownExecute: boolean = false )
    {  
       let dopX = !isMakeRightLeftExecute || this.isRightPathGreatestThanLeft(isPointExecute ? point : null) ? 0 : (`${text}`.length + 1) * this.fontSize / 2;
       let dopY = isMakeUpDownExecute && !this.isUpPathGreatestThanDown() ? this.fontSize : 0;
-      //let dopX = 0;
 
       this.cx.fillStyle = color;
       this.cx.font = `${fontSize}px serif`;
@@ -199,7 +208,7 @@ export default class Painter{
       );
    }
 
-   private rederLine(from: Point, to: Point, color: string = 'black'){
+   private rederLine(from: Point, to: Point, color: string = this.axisColor){
       this.cx.beginPath();
       this.cx.moveTo(this.getRenderXLocation(from.X), this.getRenderYLocation(from.Y));
       this.cx.lineTo(this.getRenderXLocation(to.X), this.getRenderYLocation(to.Y));
@@ -269,7 +278,7 @@ export default class Painter{
       return pointList.map((mathPoint, index) => new FullLocations(new Point(this.convertXLocation(helpArray[index].X), this.convertYLocation(helpArray[index].Y)), mathPoint));
    }
 
-   private renderArc(point: Point, radius: number = this.pointRadius, color: string = 'red'){
+   private renderArc(point: Point, radius: number = this.pointRadius, color: string = this.graphColor){
       this.cx.beginPath();
       this.cx.fillStyle = color;
       this.cx.arc(this.getRenderXLocation(point.X), this.getRenderYLocation(point.Y), radius, 0, 2 * Math.PI, true);
@@ -285,7 +294,7 @@ export default class Painter{
    }
 
    private renderBackground(){
-      this.cx.fillStyle = '#edece9';
+      this.cx.fillStyle = this.canvasBackground;
       this.cx.fillRect(0, 0, this.canvas.width, this.canvas.height);
    }
 
@@ -331,11 +340,11 @@ export default class Painter{
          const xZero = new Point(this.axisBigData.Zero!.Point.X, this.hoverLocation.ProgramPoint.Y);
          const yZero = new Point(this.hoverLocation.ProgramPoint.X, this.axisBigData.Zero!.Point.Y);
 
-         this.rederLine(this.hoverLocation.ProgramPoint, xZero, 'green');
-         this.rederLine(this.hoverLocation.ProgramPoint, yZero, 'green');
+         this.rederLine(this.hoverLocation.ProgramPoint, xZero, this.lineLocationColor);
+         this.rederLine(this.hoverLocation.ProgramPoint, yZero, this.lineLocationColor);
 
-         this.renderText(`${this.hoverLocation.MathPoint.Y}`, xZero, true, false, this.fontSize, 'orange');
-         this.renderText(`${this.hoverLocation.MathPoint.X}`, yZero, true, false, this.fontSize, 'orange', true, true);
+         this.renderText(`${this.hoverLocation.MathPoint.Y}`, xZero, true, false, this.fontSize, this.pointLocationColor);
+         this.renderText(`${this.hoverLocation.MathPoint.X}`, yZero, true, false, this.fontSize, this.pointLocationColor, true, true);
       }
 
       //requestAnimationFrame(this.loop);
