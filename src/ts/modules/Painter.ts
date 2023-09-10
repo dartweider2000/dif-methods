@@ -189,15 +189,23 @@ export default class Painter{
          this.renderText(this.axisBigData.X.start.Value, this.axisBigData.X.start.Point, true, true, this.fontSize, this.axisColor, false, false, true);
 
       if(this.axisBigData.Zero!.Point.Y !== this.axisBigData.Y.start.Point.Y)
-         this.renderText(this.axisBigData.Y.start.Value, this.axisBigData.Y.start.Point, true);
+         this.renderText(this.axisBigData.Y.start.Value, this.axisBigData.Y.start.Point, true, false, this.fontSize, this.axisColor, false, false, true, 'syka');
    }
 
    private renderText(text: string | number, point: Point, isUp: boolean = false, isNear: boolean = false, 
       fontSize: number = this.fontSize, color: string = this.axisNumbersColor, 
-      isMakeRightLeftExecute: boolean = true, isPointExecute: boolean = false, isMakeUpDownExecute: boolean = false )
+      isMakeRightLeftExecute: boolean = true, isPointExecute: boolean = false, isMakeUpDownExecute: boolean = false, syka: string = '')
    {  
       let dopX = !isMakeRightLeftExecute || this.isRightPathGreatestThanLeft(isPointExecute ? point : null) ? 0 : (`${text}`.length + 1) * this.fontSize / 2;
+      // if(syka == 'syka'){
+      //    console.log(dopY);
+      // }
+      
       let dopY = isMakeUpDownExecute && !this.isUpPathGreatestThanDown() ? this.fontSize : 0;
+
+      if(syka == 'syka'){
+         dopY = this.isUpPathGreatestThanDown() ? this.fontSize : 0; 
+      }
 
       this.cx.fillStyle = color;
       this.cx.font = `${fontSize}px serif`;
@@ -327,7 +335,7 @@ export default class Painter{
 
      // console.log(Math.abs(this.minMaxValues.YMax), (Math.abs(this.minMaxValues.YMin) / 4));
 
-      return Math.abs(this.minMaxValues.YMax) > (Math.abs(this.minMaxValues.YMin) / 5)
+      return Math.abs(this.minMaxValues.YMax) > (Math.abs(this.minMaxValues.YMin) / 5);
    }
 
    private loop(){
