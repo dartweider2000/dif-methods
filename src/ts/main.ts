@@ -139,14 +139,14 @@ function loadHandler(e: Event){
          if(pointList){
             reset();
 
-            console.log('!!!!!!!!!!!!!!!!!');
+            //console.log('!!!!!!!!!!!!!!!!!');
             painter = new Painter(pointList, canvas, +(form.elements.namedItem('xMax') as HTMLInputElement).value, window.innerWidth);
             painter.Start();
          }
         // console.log(canvasWrapper.offsetWidth);
       };
 
-      //resireHandler();
+      resireHandler();
       //window.addEventListener('resize', () => setTimeout(resireHandler, 100));
       window.onresize = resireHandler;
    }
@@ -191,21 +191,21 @@ function loadHandler(e: Event){
 
          return;
       }else if(xMaxInputValue > 1200){
-         console.log('XMax слишком большое');
+         //console.log('XMax слишком большое');
 
          xMaxError.hidden = false;
          xMaxError.textContent = 'XMax слишком большое';
 
          return;
       }else if(tayInputValue > 0 && tayInputValue < 0.001){
-         console.log('Tay слишком маленькое');
+         //console.log('Tay слишком маленькое');
 
          tayError.hidden = false;
          tayError.textContent = 'Tay слишком маленькое';
 
          return;
       }else if(tayInputValue <= 0){
-         console.log('Недопустимое значение Tay');
+         //console.log('Недопустимое значение Tay');
 
          tayError.hidden = false;
          tayError.textContent = 'Недопустимое значение Tay';
