@@ -51,6 +51,7 @@ body{
    align-items: center;
    font-size: 16px;
    grid-template: repeat(3, auto) / repeat(2, auto);
+   align-items: start;
 
    @media(max-width: 539px){
       grid-template: repeat(6, auto) / auto;
@@ -74,6 +75,8 @@ body{
    &__input-wrapper {
       display: grid;
       gap: 10px;
+
+      //align-items: start;
    }
 
    // .form__label
@@ -94,6 +97,21 @@ body{
          &::placeholder{
             color: transparent;
          }
+      }
+   }
+
+   // .form__error-block
+   &__error-block {
+      font-size: 14px;
+      color: red;
+      text-align: justify;
+      //display: none;
+      // .form__error-block_x-max
+      &_x-max {
+      }
+      // .form__error-block_x-tay
+      &_tay{
+
       }
    }
    // .form__select

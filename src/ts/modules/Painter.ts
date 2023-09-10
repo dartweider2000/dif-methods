@@ -55,7 +55,7 @@ export default class Painter{
 
       //console.log(this.locations);
 
-      console.log(this.minMaxValues);
+      //console.log(this.minMaxValues);
 
       //this.printCoordLines();
 

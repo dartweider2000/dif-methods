@@ -29,6 +29,14 @@ function loadHandler(e: Event){
 
    const form: HTMLFormElement = document.querySelector('.form')!;
 
+   const xMaxError = form.querySelector('.form__error-block_x-max') as HTMLElement;
+   const tayError = form.querySelector('.form__error-block_tay') as HTMLElement;
+
+   const hideError = () => {
+      xMaxError.hidden = true;
+      tayError.hidden = true;
+   }
+
    const initSelect = () => {
       interface IOption{
          value: number | string; 
@@ -88,6 +96,9 @@ function loadHandler(e: Event){
             (form.elements.namedItem('x_0') as HTMLInputElement).value = preset!.X_0.toString();
             (form.elements.namedItem('y_0') as HTMLInputElement).value = preset!.Y_0.toString();
 
+            if(customSelectEl.classList.contains('_active'))
+               hideError();
+
             customSelectEl.classList.remove('_active');
          }else if(el.closest('.custom-select__line')){
             customSelectEl.classList.toggle('_active');
@@ -128,14 +139,16 @@ function loadHandler(e: Event){
          if(pointList){
             reset();
 
+            console.log('!!!!!!!!!!!!!!!!!');
             painter = new Painter(pointList, canvas, +(form.elements.namedItem('xMax') as HTMLInputElement).value, window.innerWidth);
             painter.Start();
          }
         // console.log(canvasWrapper.offsetWidth);
       };
 
-      resireHandler();
-      window.addEventListener('resize', () => setTimeout(resireHandler, 100));
+      //resireHandler();
+      //window.addEventListener('resize', () => setTimeout(resireHandler, 100));
+      window.onresize = resireHandler;
    }
 
    initCanvas();
@@ -148,17 +161,57 @@ function loadHandler(e: Event){
    const yZeroInput = form.elements.namedItem('y_0') as HTMLInputElement;
    const seclectEl = document.querySelector('select') as HTMLSelectElement;
 
+   [xMaxInput, tayInput].forEach(input => input.addEventListener('input', e => {
+      const el = e.target as HTMLInputElement;
+
+      (el.nextElementSibling as HTMLElement).hidden = true;
+   }));
+
+   xMaxError.hidden = true;
+   tayError.hidden = true;
+
+   xMaxInput.focus();
+
    form.addEventListener('submit', e => {
       e.preventDefault();
 
       document.body.classList.add('submited');
-      window.dispatchEvent(new Event('resize'));
 
       const xMaxInputValue: number = +xMaxInput.value;
       const tayInputValue: number = +tayInput.value;
       const xZeroInputValue: number = +xZeroInput.value;
       const yZeroInputValue: number = +yZeroInput.value;
       const selectValue: number = +seclectEl.value;
+
+      if(xMaxInputValue <= xZeroInputValue){
+         //console.log('XMax слишкол маленькое');
+
+         xMaxError.hidden = false;
+         xMaxError.textContent = 'XMax слишкол маленькое';
+
+         return;
+      }else if(xMaxInputValue > 1200){
+         console.log('XMax слишком большое');
+
+         xMaxError.hidden = false;
+         xMaxError.textContent = 'XMax слишком большое';
+
+         return;
+      }else if(tayInputValue > 0 && tayInputValue < 0.001){
+         console.log('Tay слишком маленькое');
+
+         tayError.hidden = false;
+         tayError.textContent = 'Tay слишком маленькое';
+
+         return;
+      }else if(tayInputValue <= 0){
+         console.log('Недопустимое значение Tay');
+
+         tayError.hidden = false;
+         tayError.textContent = 'Недопустимое значение Tay';
+
+         return;
+      }
 
       //console.log(xMaxInputValue, tayInputValue, xZeroInputValue, yZeroInputValue);
 
