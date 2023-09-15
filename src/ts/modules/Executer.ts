@@ -5,13 +5,15 @@ export default class Executer{
    private x_max: number;
 
    private x: number;
-   private y: number;
+
+   private y: [number, number];
+   private yy: [number, number];
 
    private pointList: Point[];
 
    private funcId: number;
 
-   constructor(tay: number, x_max: number, x_0: number, y_0: number, functId: number){
+   constructor(tay: number, x_max: number, x_0: number, y_0: [number, number], functId: number){
       if(this.x_max < x_0)
          throw new Error();
 
@@ -19,32 +21,45 @@ export default class Executer{
       this.x_max = x_max;
 
       this.x= x_0;
+
       this.y = y_0;
+      this.yy = [0, 0];
 
       this.funcId = functId;
 
       this.pointList = [];
-      this.addToList();
+
+      this.addToList(this.x, this.y[0]);
+      this.addToList(this.x, this.y[1]);
    }
 
-   private getDerivate(): number{
-      switch(this.funcId){
+   private getDerivate(x: number, y: [number, number], i: number): number{
+      // switch(this.funcId){
+      //    case 1:
+      //       return (this.y + 3.5 * (this.x - 1) - 3.5) / this.x;
+      //    case 2:
+      //       return Math.sin(this.x) + 1 / this.y;
+      //    case 3:
+      //       return this.x**2 - 2 * this.y - 50;
+      //    case 4:
+      //       return 2 * this.y + this.x;
+      //    default:
+      //       return (this.y + 3.5 * (this.x - 1) - 3.5) / this.x;
+      // }
+
+      switch(i){
+         case 0:
+            return Math.sin(x + y[0] * y[1]);
          case 1:
-            return (this.y + 3.5 * (this.x - 1) - 3.5) / this.x;
-         case 2:
-            return Math.sin(this.x) + 1 / this.y;
-         case 3:
-            return this.x**2 - 2 * this.y - 50;
-         case 4:
-            return 2 * this.y + this.x;
+            return Math.cos(x**2 - y[0] + y[1]);
          default:
-            return (this.y + 3.5 * (this.x - 1) - 3.5) / this.x;
+            return 0;
       }
    }
 
-   private setNewY(): void{
-      this.y = this.getDerivate() * this.tay + this.y;
-   }
+   // private setNewY(): void{
+   //    this.y = this.getDerivate() * this.tay + this.y;
+   // }
 
    private setNewX(): void{
       this.x += this.tay;
@@ -53,16 +68,29 @@ export default class Executer{
       //    this.setNewX();
    }
 
-   private addToList(): void{
-      this.pointList.push(new Point(this.x, this.y));
+   private addToList(x: number, y: number): void{
+      this.pointList.push(new Point(x, y));
    }
 
    private loop(): void{
-      while(this.x_max > this.x){
-         this.setNewY();
-         this.setNewX();
-         this.addToList();
+      for(this.x; this.x < this.x_max; this.x += this.tay){
+
+         for(let i = 0; i < this.y.length; i++){
+            this.yy[i] = this.getDerivate(this.x, this.y, i) * this.tay + this.y[i]; 
+         }
+
+         for(let i = 0; i < this.y.length; i++){
+            this.y[i] = this.yy[i];
+
+            this.addToList(this.x, this.y[i]);
+         }
       }
+
+      // while(this.x_max > this.x){
+      //    this.setNewY();
+      //    this.setNewX();
+      //    this.addToList();
+      // }
 
       //console.log(this.pointList);
    }

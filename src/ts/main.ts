@@ -181,7 +181,7 @@ function loadHandler(e: Event){
       const xMaxInputValue: number = +xMaxInput.value;
       const tayInputValue: number = +tayInput.value;
       const xZeroInputValue: number = +xZeroInput.value;
-      const yZeroInputValue: number = +yZeroInput.value;
+      const yZeroInputValue: [number, number] = yZeroInput.value.split(', ').map(el => +el) as [number, number];
       const selectValue: number = +seclectEl.value;
 
       if(xMaxInputValue <= xZeroInputValue){
@@ -216,7 +216,7 @@ function loadHandler(e: Event){
 
       //console.log(xMaxInputValue, tayInputValue, xZeroInputValue, yZeroInputValue);
 
-      const executer = new Executer(tayInputValue, xMaxInputValue, xZeroInputValue, yZeroInputValue, selectValue);
+      const executer = new Executer(tayInputValue, xMaxInputValue, xZeroInputValue, yZeroInputValue , selectValue);
       executer.Start();
 
       //initCanvas();
