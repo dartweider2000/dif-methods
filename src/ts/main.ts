@@ -25,6 +25,7 @@ function loadHandler(e: Event){
       [2, new Preset(0, 1)],
       [3, new Preset(-20, 50)],
       [5, new Preset(0, '2, 1')],
+      [6, new Preset(0, '0, 0.2')],
       //[4, new Preset(1, 2)]
    ]);
 
