@@ -46,14 +46,26 @@ export default class Executer{
       //    default:
       //       return (this.y + 3.5 * (this.x - 1) - 3.5) / this.x;
       // }
-
-      switch(i){
-         case 0:
-            return Math.sin(x + y[0] * y[1]);
-         case 1:
-            return Math.cos(x**2 - y[0] + y[1]);
-         default:
-            return 0;
+      if(this.funcId == 5){
+         switch(i){
+            case 0:
+               return Math.sin(x + y[0] * y[1]);
+            case 1:
+               return Math.cos(x**2 - y[0] + y[1]);
+            default:
+               return 0;
+         }
+      }else if(this.funcId == 6){
+         switch(i){
+            case 0:
+               return y[1];
+            case 1:
+               return -0.04 * Math.E**(-x);
+            default:
+               return 0;
+         }
+      }else{
+         return 0;
       }
    }
 
